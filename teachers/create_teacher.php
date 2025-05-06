@@ -46,12 +46,12 @@ $user_id = $userStmt->insert_id;
 $userStmt->close();
 
 // 4. Insert into teachers table
-$teacherStmt = $conn->prepare("INSERT INTO teachers (user_id, specialization, joined_date, qualification, experience_years, status) VALUES (?, ?, ?, ?, ?, ?)");
+$teacherStmt = $conn->prepare("INSERT INTO teachers (user_id, specialization, joined_date, qualification, experience_years) VALUES (?, ?, ?, ?, ?)");
 if (!$teacherStmt) {
     echo json_encode(["status" => "error", "message" => "Prepare failed (teachers): " . $conn->error]);
     exit;
 }
-$teacherStmt->bind_param("isssis", $user_id, $specialization, $joined_date, $qualification, $experience_years, $status);
+$teacherStmt->bind_param("isssis", $user_id, $specialization, $joined_date, $qualification, $experience_years);
 
 if ($teacherStmt->execute()) {
     echo json_encode(["status" => "success", "message" => "Teacher created successfully"]);

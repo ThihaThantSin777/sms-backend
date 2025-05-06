@@ -18,16 +18,21 @@ $end_time = $_POST['end_time'] ?? '';
 $duration_months = $_POST['duration_months'] ?? '';
 $max_students = $_POST['max_students'] ?? '';
 $class_level = $_POST['class_level'] ?? '';
+$status = $_POST['status'] ?? '';
 
-if (empty($id) || empty($class_name) || empty($class_description) || empty($teacher_id) || empty($start_time) || empty($end_time) || empty($duration_months) || empty($max_students) || empty($class_level)) {
+if (
+    empty($id) || empty($class_name) || empty($class_description) || empty($teacher_id) ||
+    empty($start_time) || empty($end_time) || empty($duration_months) ||
+    empty($max_students) || empty($class_level) || empty($status)
+) {
     echo json_encode(["status" => "error", "message" => "All fields are required"]);
     exit;
 }
 
-$stmt = $conn->prepare("UPDATE classes SET class_name = ?, class_description = ?, teacher_id = ?, start_time = ?, end_time = ?, duration_months = ?, max_students = ?, class_level = ? WHERE id = ?");
+$stmt = $conn->prepare("UPDATE classes SET class_name = ?, class_description = ?, teacher_id = ?, start_time = ?, end_time = ?, duration_months = ?, max_students = ?, class_level = ?, status = ? WHERE id = ?");
 
 if ($stmt) {
-    $stmt->bind_param("ssisssisi", $class_name, $class_description, $teacher_id, $start_time, $end_time, $duration_months, $max_students, $class_level, $id);
+    $stmt->bind_param("ssisssissi", $class_name, $class_description, $teacher_id, $start_time, $end_time, $duration_months, $max_students, $class_level, $status, $id);
     if ($stmt->execute()) {
         echo json_encode(["status" => "success", "message" => "Class updated successfully", "data" => null]);
     } else {

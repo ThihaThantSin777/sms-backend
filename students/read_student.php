@@ -11,7 +11,8 @@ include '../db.php';
 
 $sql = "SELECT s.id, s.user_id, u.name, u.email, u.phone, s.date_of_birth, s.class_id, s.gender, s.address, s.guardian_name 
         FROM students s 
-        JOIN users u ON s.user_id = u.id";
+        JOIN users u ON s.user_id = u.id
+        WHERE u.status = 'active'";
 
 $result = $conn->query($sql);
 
@@ -33,7 +34,7 @@ while ($row = $result->fetch_assoc()) {
 
 echo json_encode([
     "status" => "success",
-    "message" => "Students retrieved successfully",
+    "message" => "Active students retrieved successfully",
     "data" => $students
 ]);
 ?>

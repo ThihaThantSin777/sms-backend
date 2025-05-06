@@ -17,8 +17,13 @@ $end_time = $_POST['end_time'] ?? '';
 $duration_months = $_POST['duration_months'] ?? '';
 $max_students = $_POST['max_students'] ?? '';
 $class_level = $_POST['class_level'] ?? '';
+$status = $_POST['status'] ?? 'active'; // default to 'active'
 
-if (empty($class_name) || empty($class_description) || empty($teacher_id) || empty($start_time) || empty($end_time) || empty($duration_months) || empty($max_students) || empty($class_level)) {
+if (
+    empty($class_name) || empty($class_description) || empty($teacher_id) ||
+    empty($start_time) || empty($end_time) || empty($duration_months) ||
+    empty($max_students) || empty($class_level) || empty($status)
+) {
     echo json_encode(["status" => "error", "message" => "All fields are required"]);
     exit;
 }
@@ -35,15 +40,34 @@ if ($check->num_rows === 0) {
 }
 $check->close();
 
-$stmt = $conn->prepare("INSERT INTO classes (class_name, class_description, teacher_id, start_time, end_time, duration_months, max_students, class_level) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+// Prepare insert statement with new column: status
+$stmt = $conn->prepare("
+    INSERT INTO classes (
+        class_name, class_description, teacher_id, start_time, end_time,
+        duration_months, max_students, class_level, status
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+");
 
 if ($stmt) {
-    $stmt->bind_param("ssisssis", $class_name, $class_description, $teacher_id, $start_time, $end_time, $duration_months, $max_students, $class_level);
+    $stmt->bind_param(
+        "ssisssiss",
+        $class_name,
+        $class_description,
+        $teacher_id,
+        $start_time,
+        $end_time,
+        $duration_months,
+        $max_students,
+        $class_level,
+        $status
+    );
+
     if ($stmt->execute()) {
         echo json_encode(["status" => "success", "message" => "Class created successfully", "data" => null]);
     } else {
         echo json_encode(["status" => "error", "message" => "Execution failed: " . $stmt->error]);
     }
+
     $stmt->close();
 } else {
     echo json_encode(["status" => "error", "message" => "Prepare failed: " . $conn->error]);

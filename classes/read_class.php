@@ -9,7 +9,7 @@ header("Content-Type: application/json");
 
 include '../db.php';
 
-$sql = "SELECT id, class_name, class_description, teacher_id, start_time, end_time, duration_months, max_students, class_level FROM classes";
+$sql = "SELECT id, class_name, class_description, teacher_id, start_time, end_time, duration_months, max_students, class_level, status FROM classes";
 $result = $conn->query($sql);
 
 $classes = [];
@@ -23,7 +23,8 @@ while ($row = $result->fetch_assoc()) {
         'end_time' => $row['end_time'],
         'duration_months' => (int)$row['duration_months'],
         'max_students' => (int)$row['max_students'],
-        'class_level' => $row['class_level']
+        'class_level' => $row['class_level'],
+        'status' => $row['status']
     ];
 }
 

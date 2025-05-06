@@ -15,17 +15,16 @@ $specialization = $_POST['specialization'] ?? '';
 $joined_date = $_POST['joined_date'] ?? '';
 $qualification = $_POST['qualification'] ?? '';
 $experience_years = $_POST['experience_years'] ?? '';
-$status = $_POST['status'] ?? '';
 
-if (empty($id) || empty($user_id) || empty($specialization) || empty($joined_date) || empty($qualification) || empty($experience_years) || empty($status)) {
+if (empty($id) || empty($user_id) || empty($specialization) || empty($joined_date) || empty($qualification) || empty($experience_years) ) {
     echo json_encode(["status" => "error", "message" => "All fields are required"]);
     exit;
 }
 
-$stmt = $conn->prepare("UPDATE teachers SET user_id = ?, specialization = ?, joined_date = ?, qualification = ?, experience_years = ?, status = ? WHERE id = ?");
+$stmt = $conn->prepare("UPDATE teachers SET user_id = ?, specialization = ?, joined_date = ?, qualification = ?, experience_years = ? WHERE id = ?");
 
 if ($stmt) {
-    $stmt->bind_param("isssisi", $user_id, $specialization, $joined_date, $qualification, $experience_years, $status, $id);
+    $stmt->bind_param("isssisi", $user_id, $specialization, $joined_date, $qualification, $experience_years, $id);
     if ($stmt->execute()) {
         echo json_encode(["status" => "success", "message" => "Teacher updated successfully", "data" => null]);
     } else {
