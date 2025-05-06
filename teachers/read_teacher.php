@@ -9,7 +9,7 @@ header("Content-Type: application/json");
 
 include '../db.php';
 
-$sql = "SELECT t.id, u.name, u.email, u.phone, t.specialization, t.joined_date, t.qualification, t.experience_years, t.status
+$sql = "SELECT t.id, u.name, u.email, u.phone, t.specialization, t.joined_date, t.qualification, t.experience_years
         FROM teachers t
         JOIN users u ON t.user_id = u.id
         WHERE u.status = 'active'";
