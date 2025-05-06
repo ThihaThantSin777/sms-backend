@@ -9,30 +9,57 @@ header("Content-Type: application/json");
 
 include '../db.php';
 
-$user_id = $_POST['user_id'] ?? '';
+// User data
+$name = $_POST['name'] ?? '';
+$email = $_POST['email'] ?? '';
+$phone = $_POST['phone'] ?? '';
+$password = $_POST['password'] ?? '';
+$role = 'student';
+$status = 'active';
+
+// Student data
 $date_of_birth = $_POST['date_of_birth'] ?? '';
 $class_id = $_POST['class_id'] ?? '';
-$roll_number = $_POST['roll_number'] ?? '';
 $gender = $_POST['gender'] ?? '';
 $address = $_POST['address'] ?? '';
 $guardian_name = $_POST['guardian_name'] ?? '';
 
-if (empty($user_id) || empty($date_of_birth) || empty($class_id) || empty($roll_number) || empty($gender)) {
+// Validate required fields
+if (empty($name) || empty($email) || empty($password) || empty($date_of_birth) || empty($class_id) || empty($gender)) {
     echo json_encode(["status" => "error", "message" => "Required fields are missing"]);
     exit;
 }
 
-$stmt = $conn->prepare("INSERT INTO students (user_id, date_of_birth, class_id, roll_number, gender, address, guardian_name) VALUES (?, ?, ?, ?, ?, ?, ?)");
 
-if ($stmt) {
-    $stmt->bind_param("issssss", $user_id, $date_of_birth, $class_id, $roll_number, $gender, $address, $guardian_name);
-    if ($stmt->execute()) {
-        echo json_encode(["status" => "success", "message" => "Student created successfully", "data" => null]);
+// Hash password securely
+$hashed_password = password_hash($password, PASSWORD_BCRYPT);
+
+// Insert into users table
+$userStmt = $conn->prepare("INSERT INTO users (name, email, phone, password, role, status) VALUES (?, ?, ?, ?, ?, ?)");
+if ($userStmt) {
+    $userStmt->bind_param("ssssss", $name, $email, $phone, $hashed_password, $role, $status);
+    if ($userStmt->execute()) {
+        $user_id = $conn->insert_id;
+
+        // Insert into students table
+        $studentStmt = $conn->prepare("INSERT INTO students (user_id, date_of_birth, class_id, gender, address, guardian_name) VALUES (?, ?, ?, ?, ?, ?)");
+        if ($studentStmt) {
+            // Fix bind_param: "isisss" matches correct types
+            $studentStmt->bind_param("isisss", $user_id, $date_of_birth, $class_id, $gender, $address, $guardian_name);
+            if ($studentStmt->execute()) {
+                echo json_encode(["status" => "success", "message" => "Student created successfully", "user_id" => $user_id]);
+            } else {
+                echo json_encode(["status" => "error", "message" => "Student insert failed: " . $studentStmt->error]);
+            }
+            $studentStmt->close();
+        } else {
+            echo json_encode(["status" => "error", "message" => "Prepare failed (student): " . $conn->error]);
+        }
     } else {
-        echo json_encode(["status" => "error", "message" => "Execution failed: " . $stmt->error]);
+        echo json_encode(["status" => "error", "message" => "User insert failed: " . $userStmt->error]);
     }
-    $stmt->close();
+    $userStmt->close();
 } else {
-    echo json_encode(["status" => "error", "message" => "Prepare failed: " . $conn->error]);
+    echo json_encode(["status" => "error", "message" => "Prepare failed (user): " . $conn->error]);
 }
 ?>

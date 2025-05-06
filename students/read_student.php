@@ -9,7 +9,7 @@ header("Content-Type: application/json");
 
 include '../db.php';
 
-$sql = "SELECT s.id, u.name, u.email, u.phone, s.date_of_birth, s.class_id, s.roll_number, s.gender, s.address, s.guardian_name 
+$sql = "SELECT s.id, s.user_id, u.name, u.email, u.phone, s.date_of_birth, s.class_id, s.gender, s.address, s.guardian_name 
         FROM students s 
         JOIN users u ON s.user_id = u.id";
 
@@ -19,12 +19,12 @@ $students = [];
 while ($row = $result->fetch_assoc()) {
     $students[] = [
         'id' => (int)$row['id'],
+        'user_id' => (int)$row['user_id'],
         'name' => $row['name'],
         'email' => $row['email'],
         'phone' => $row['phone'],
         'date_of_birth' => $row['date_of_birth'],
         'class_id' => (int)$row['class_id'],
-        'roll_number' => $row['roll_number'],
         'gender' => $row['gender'],
         'address' => $row['address'],
         'guardian_name' => $row['guardian_name']

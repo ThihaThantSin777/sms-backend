@@ -12,20 +12,19 @@ include '../db.php';
 $id = $_POST['id'] ?? '';
 $date_of_birth = $_POST['date_of_birth'] ?? '';
 $class_id = $_POST['class_id'] ?? '';
-$roll_number = $_POST['roll_number'] ?? '';
 $gender = $_POST['gender'] ?? '';
 $address = $_POST['address'] ?? '';
 $guardian_name = $_POST['guardian_name'] ?? '';
 
-if (empty($id) || empty($date_of_birth) || empty($class_id) || empty($roll_number) || empty($gender)) {
+if (empty($id) || empty($date_of_birth) || empty($class_id)|| empty($gender)) {
     echo json_encode(["status" => "error", "message" => "Required fields are missing"]);
     exit;
 }
 
-$stmt = $conn->prepare("UPDATE students SET date_of_birth = ?, class_id = ?, roll_number = ?, gender = ?, address = ?, guardian_name = ? WHERE id = ?");
+$stmt = $conn->prepare("UPDATE students SET date_of_birth = ?, class_id = ?, gender = ?, address = ?, guardian_name = ? WHERE id = ?");
 
 if ($stmt) {
-    $stmt->bind_param("sissssi", $date_of_birth, $class_id, $roll_number, $gender, $address, $guardian_name, $id);
+    $stmt->bind_param("sissssi", $date_of_birth, $class_id, $gender, $address, $guardian_name, $id);
     if ($stmt->execute()) {
         echo json_encode(["status" => "success", "message" => "Student updated successfully", "data" => null]);
     } else {
