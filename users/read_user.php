@@ -9,16 +9,18 @@ header("Content-Type: application/json");
 
 include '../db.php';
 
-$sql = "SELECT id, name, email, role, created_at FROM users";
+$sql = "SELECT id, name, phone, email, role, status, created_at FROM users";
 $result = $conn->query($sql);
 
 $users = [];
 while ($row = $result->fetch_assoc()) {
     $users[] = [
-        "id" => (int)$row["id"], // Cast to integer
+        "id" => (int)$row["id"],
         "name" => $row["name"],
+        "phone" => $row["phone"],
         "email" => $row["email"],
         "role" => $row["role"],
+        "status" => $row["status"],
         "created_at" => $row["created_at"]
     ];
 }

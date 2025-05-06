@@ -11,38 +11,19 @@ include '../db.php';
 
 $class_name = $_POST['class_name'] ?? '';
 $class_description = $_POST['class_description'] ?? '';
-$class_duration = $_POST['class_duration'] ?? '';
 $teacher_id = isset($_POST['teacher_id']) ? intval($_POST['teacher_id']) : 0;
-$room_number = $_POST['room_number'] ?? '';
-$remark = $_POST['remark'] ?? '';
+$start_time = $_POST['start_time'] ?? '';
+$end_time = $_POST['end_time'] ?? '';
+$duration_months = $_POST['duration_months'] ?? '';
+$max_students = $_POST['max_students'] ?? '';
+$class_level = $_POST['class_level'] ?? '';
 
-// 🔍 Detailed field-by-field validation
-if (empty($class_name)) {
-    echo json_encode(["status" => "error", "message" => "Class name is required"]);
-    exit;
-}
-if (empty($class_description)) {
-    echo json_encode(["status" => "error", "message" => "Class description is required"]);
-    exit;
-}
-if (empty($class_duration)) {
-    echo json_encode(["status" => "error", "message" => "Class duration is required"]);
-    exit;
-}
-if (empty($teacher_id)) {
-    echo json_encode(["status" => "error", "message" => "Teacher ID is required"]);
-    exit;
-}
-if (empty($room_number)) {
-    echo json_encode(["status" => "error", "message" => "Room number is required"]);
-    exit;
-}
-if (empty($remark)) {
-    echo json_encode(["status" => "error", "message" => "Remark is required"]);
+if (empty($class_name) || empty($class_description) || empty($teacher_id) || empty($start_time) || empty($end_time) || empty($duration_months) || empty($max_students) || empty($class_level)) {
+    echo json_encode(["status" => "error", "message" => "All fields are required"]);
     exit;
 }
 
-// ✅ Optional: check if teacher_id exists in teachers table
+// Check if teacher exists
 $check = $conn->prepare("SELECT id FROM teachers WHERE id = ?");
 $check->bind_param("i", $teacher_id);
 $check->execute();
@@ -54,13 +35,10 @@ if ($check->num_rows === 0) {
 }
 $check->close();
 
-// ✅ Insert class
-$sql = "INSERT INTO classes (class_name, class_description, class_duration, teacher_id, room_number, remark)
-        VALUES (?, ?, ?, ?, ?, ?)";
+$stmt = $conn->prepare("INSERT INTO classes (class_name, class_description, teacher_id, start_time, end_time, duration_months, max_students, class_level) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
-$stmt = $conn->prepare($sql);
 if ($stmt) {
-    $stmt->bind_param("sssiss", $class_name, $class_description, $class_duration, $teacher_id, $room_number, $remark);
+    $stmt->bind_param("ssisssis", $class_name, $class_description, $teacher_id, $start_time, $end_time, $duration_months, $max_students, $class_level);
     if ($stmt->execute()) {
         echo json_encode(["status" => "success", "message" => "Class created successfully", "data" => null]);
     } else {

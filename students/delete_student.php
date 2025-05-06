@@ -16,9 +16,7 @@ if (empty($id)) {
     exit;
 }
 
-$sql = "DELETE FROM students WHERE id = ?";
-$stmt = $conn->prepare($sql);
-
+$stmt = $conn->prepare("DELETE FROM students WHERE id = ?");
 if ($stmt) {
     $stmt->bind_param("i", $id);
     if ($stmt->execute()) {

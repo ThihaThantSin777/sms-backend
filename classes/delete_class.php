@@ -16,9 +16,7 @@ if (empty($id)) {
     exit;
 }
 
-$sql = "DELETE FROM classes WHERE id = ?";
-$stmt = $conn->prepare($sql);
-
+$stmt = $conn->prepare("DELETE FROM classes WHERE id = ?");
 if ($stmt) {
     $stmt->bind_param("i", $id);
     if ($stmt->execute()) {

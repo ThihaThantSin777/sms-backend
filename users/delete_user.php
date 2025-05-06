@@ -16,11 +16,16 @@ if (empty($id)) {
     exit;
 }
 
-$sql = "DELETE FROM users WHERE id = '$id'";
-
-if ($conn->query($sql)) {
-    echo json_encode(["status" => "success", "message" => "User deleted successfully", "data" => null]);
+$stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
+if ($stmt) {
+    $stmt->bind_param("i", $id);
+    if ($stmt->execute()) {
+        echo json_encode(["status" => "success", "message" => "User deleted successfully", "data" => null]);
+    } else {
+        echo json_encode(["status" => "error", "message" => "Execute failed: " . $stmt->error]);
+    }
+    $stmt->close();
 } else {
-    echo json_encode(["status" => "error", "message" => $conn->error]);
+    echo json_encode(["status" => "error", "message" => "Prepare failed: " . $conn->error]);
 }
 ?>

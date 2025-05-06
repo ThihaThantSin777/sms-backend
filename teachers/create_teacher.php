@@ -9,27 +9,26 @@ header("Content-Type: application/json");
 
 include '../db.php';
 
-$name = $_POST['name'] ?? '';
-$email = $_POST['email'] ?? '';
-$phone = $_POST['phone'] ?? '';
+$user_id = $_POST['user_id'] ?? '';
 $specialization = $_POST['specialization'] ?? '';
 $joined_date = $_POST['joined_date'] ?? '';
+$qualification = $_POST['qualification'] ?? '';
+$experience_years = $_POST['experience_years'] ?? '';
+$status = $_POST['status'] ?? 'Active';
 
-if (empty($name) || empty($email) || empty($phone) || empty($specialization) || empty($joined_date)) {
+if (empty($user_id) || empty($specialization) || empty($joined_date) || empty($qualification) || empty($experience_years)) {
     echo json_encode(["status" => "error", "message" => "All fields are required"]);
     exit;
 }
 
-$sql = "INSERT INTO teachers (name, email, phone, specialization, joined_date)
-        VALUES (?, ?, ?, ?, ?)";
+$stmt = $conn->prepare("INSERT INTO teachers (user_id, specialization, joined_date, qualification, experience_years, status) VALUES (?, ?, ?, ?, ?, ?)");
 
-$stmt = $conn->prepare($sql);
 if ($stmt) {
-    $stmt->bind_param("sssss", $name, $email, $phone, $specialization, $joined_date);
+    $stmt->bind_param("isssis", $user_id, $specialization, $joined_date, $qualification, $experience_years, $status);
     if ($stmt->execute()) {
         echo json_encode(["status" => "success", "message" => "Teacher created successfully", "data" => null]);
     } else {
-        echo json_encode(["status" => "error", "message" => "Execution failed: " . $stmt->error]);
+        echo json_encode(["status" => "error", "message" => "Execute failed: " . $stmt->error]);
     }
     $stmt->close();
 } else {

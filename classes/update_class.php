@@ -12,28 +12,22 @@ include '../db.php';
 $id = $_POST['id'] ?? '';
 $class_name = $_POST['class_name'] ?? '';
 $class_description = $_POST['class_description'] ?? '';
-$class_duration = $_POST['class_duration'] ?? '';
 $teacher_id = $_POST['teacher_id'] ?? '';
-$room_number = $_POST['room_number'] ?? '';
-$remark = $_POST['remark'] ?? '';
+$start_time = $_POST['start_time'] ?? '';
+$end_time = $_POST['end_time'] ?? '';
+$duration_months = $_POST['duration_months'] ?? '';
+$max_students = $_POST['max_students'] ?? '';
+$class_level = $_POST['class_level'] ?? '';
 
-if (empty($id) || empty($class_name) || empty($class_description) || empty($class_duration) || empty($teacher_id) || empty($room_number) || empty($remark)) {
+if (empty($id) || empty($class_name) || empty($class_description) || empty($teacher_id) || empty($start_time) || empty($end_time) || empty($duration_months) || empty($max_students) || empty($class_level)) {
     echo json_encode(["status" => "error", "message" => "All fields are required"]);
     exit;
 }
 
-$sql = "UPDATE classes SET 
-        class_name = ?, 
-        class_description = ?, 
-        class_duration = ?, 
-        teacher_id = ?, 
-        room_number = ?, 
-        remark = ?
-        WHERE id = ?";
+$stmt = $conn->prepare("UPDATE classes SET class_name = ?, class_description = ?, teacher_id = ?, start_time = ?, end_time = ?, duration_months = ?, max_students = ?, class_level = ? WHERE id = ?");
 
-$stmt = $conn->prepare($sql);
 if ($stmt) {
-    $stmt->bind_param("sssissi", $class_name, $class_description, $class_duration, $teacher_id, $room_number, $remark, $id);
+    $stmt->bind_param("ssisssisi", $class_name, $class_description, $teacher_id, $start_time, $end_time, $duration_months, $max_students, $class_level, $id);
     if ($stmt->execute()) {
         echo json_encode(["status" => "success", "message" => "Class updated successfully", "data" => null]);
     } else {

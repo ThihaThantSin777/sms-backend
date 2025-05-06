@@ -10,21 +10,23 @@ header("Content-Type: application/json");
 include '../db.php';
 
 $name = $_POST['name'] ?? '';
+$phone = $_POST['phone'] ?? '';
 $email = $_POST['email'] ?? '';
 $password = $_POST['password'] ?? '';
 $role = $_POST['role'] ?? 'staff';
+$status = $_POST['status'] ?? 'active';
 
-if (empty($name) || empty($email) || empty($password)) {
+if (empty($name) || empty($email) || empty($password) || empty($phone)) {
     echo json_encode(["status" => "error", "message" => "All fields are required"]);
     exit;
 }
 
 $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
-$stmt = $conn->prepare("INSERT INTO users (name, email, password, role, created_at) VALUES (?, ?, ?, ?, NOW())");
+$stmt = $conn->prepare("INSERT INTO users (name, phone, email, password, role, status, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())");
 
 if ($stmt) {
-    $stmt->bind_param("ssss", $name, $email, $hashed_password, $role);
+    $stmt->bind_param("ssssss", $name, $phone, $email, $hashed_password, $role, $status);
     if ($stmt->execute()) {
         echo json_encode(["status" => "success", "message" => "User created successfully", "data" => null]);
     } else {

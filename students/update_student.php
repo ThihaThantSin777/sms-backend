@@ -10,28 +10,22 @@ header("Content-Type: application/json");
 include '../db.php';
 
 $id = $_POST['id'] ?? '';
-$name = $_POST['name'] ?? '';
-$email = $_POST['email'] ?? '';
-$phone = $_POST['phone'] ?? '';
 $date_of_birth = $_POST['date_of_birth'] ?? '';
 $class_id = $_POST['class_id'] ?? '';
+$roll_number = $_POST['roll_number'] ?? '';
+$gender = $_POST['gender'] ?? '';
+$address = $_POST['address'] ?? '';
+$guardian_name = $_POST['guardian_name'] ?? '';
 
-if (empty($id) || empty($name) || empty($email) || empty($phone) || empty($date_of_birth) || empty($class_id)) {
-    echo json_encode(["status" => "error", "message" => "All fields are required"]);
+if (empty($id) || empty($date_of_birth) || empty($class_id) || empty($roll_number) || empty($gender)) {
+    echo json_encode(["status" => "error", "message" => "Required fields are missing"]);
     exit;
 }
 
-$sql = "UPDATE students SET 
-        name = ?, 
-        email = ?, 
-        phone = ?, 
-        date_of_birth = ?, 
-        class_id = ?
-        WHERE id = ?";
+$stmt = $conn->prepare("UPDATE students SET date_of_birth = ?, class_id = ?, roll_number = ?, gender = ?, address = ?, guardian_name = ? WHERE id = ?");
 
-$stmt = $conn->prepare($sql);
 if ($stmt) {
-    $stmt->bind_param("ssssii", $name, $email, $phone, $date_of_birth, $class_id, $id);
+    $stmt->bind_param("sissssi", $date_of_birth, $class_id, $roll_number, $gender, $address, $guardian_name, $id);
     if ($stmt->execute()) {
         echo json_encode(["status" => "success", "message" => "Student updated successfully", "data" => null]);
     } else {
