@@ -51,7 +51,7 @@ if (!$teacherStmt) {
     echo json_encode(["status" => "error", "message" => "Prepare failed (teachers): " . $conn->error]);
     exit;
 }
-$teacherStmt->bind_param("isssis", $user_id, $specialization, $joined_date, $qualification, $experience_years);
+$teacherStmt->bind_param("isssi", $user_id, $specialization, $joined_date, $qualification, $experience_years);
 
 if ($teacherStmt->execute()) {
     echo json_encode(["status" => "success", "message" => "Teacher created successfully"]);

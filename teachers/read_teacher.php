@@ -27,7 +27,6 @@ while ($row = $result->fetch_assoc()) {
         "joined_date" => $row["joined_date"],
         "qualification" => $row["qualification"],
         "experience_years" => (int)$row["experience_years"],
-        "status" => $row["status"]
     ];
 }
 
